@@ -44,6 +44,17 @@ jobs:
       - name: Tambah plugin nodejs-mobile-cordova
         run: cordova plugin add nodejs-mobile-cordova
 
+      - name: Patch nodejs-mobile-cordova (kompatibilitas cordova-android baru)
+        run: |
+          HOOK_FILE="plugins/nodejs-mobile-cordova/install/hooks/both/after-prepare-patch-npm-packages.js"
+          if [ -f "$HOOK_FILE" ]; then
+            sed -i "s/new platformAPI();/new platformAPI(platform, platformPath);/" "$HOOK_FILE"
+            echo "Hook nodejs-mobile-cordova sudah dipatch."
+            grep -n "new platformAPI" "$HOOK_FILE"
+          else
+            echo "::warning::File hook nodejs-mobile-cordova tidak ditemukan di lokasi yang diharapkan, patch dilewati."
+          fi
+
       - name: Build APK (debug, sudah bisa langsung diinstall)
         run: cordova build android --verbose
 
