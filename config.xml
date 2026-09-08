@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.triasewa.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>Triase WA</name>
+    <description>Aplikasi sortir chat WhatsApp otomatis berdasarkan urgensi.</description>
+    <author email="you@example.com">Kamu</author>
+
+    <content src="index.html" />
+
+    <access origin="*" />
+    <allow-navigation href="http://localhost:*" />
+    <allow-navigation href="*" />
+
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="android-minSdkVersion" value="24" />
+    <preference name="android-targetSdkVersion" value="34" />
+    <preference name="AndroidXEnabled" value="true" />
+    <preference name="BackgroundColor" value="0xff10161A" />
+
+    <platform name="android">
+        <icon density="ldpi" src="nodejs-assets/nodejs-project/public/icons/icon-192.png" />
+        <icon density="mdpi" src="nodejs-assets/nodejs-project/public/icons/icon-192.png" />
+        <icon density="hdpi" src="nodejs-assets/nodejs-project/public/icons/icon-192.png" />
+        <icon density="xhdpi" src="nodejs-assets/nodejs-project/public/icons/icon-512.png" />
+        <icon density="xxhdpi" src="nodejs-assets/nodejs-project/public/icons/icon-512.png" />
+        <icon density="xxxhdpi" src="nodejs-assets/nodejs-project/public/icons/icon-512.png" />
+
+        <!-- WebView perlu izin ke internet (WhatsApp) & akses localhost (server di dalam app) -->
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        </config-file>
+        <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
+            <application android:usesCleartextTraffic="true" />
+        </edit-config>
+    </platform>
+</widget>

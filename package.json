@@ -1,0 +1,12 @@
+{
+  "name": "triase-wa-android",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aplikasi Android (dibangun otomatis lewat GitHub Actions) yang membungkus bot WhatsApp Triase WA jadi satu APK, lengkap dengan server Node.js di dalamnya.",
+  "cordova": {
+    "platforms": ["android"],
+    "plugins": {
+      "nodejs-mobile-cordova": {}
+    }
+  }
+}

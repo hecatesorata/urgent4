@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Triase WA — Dashboard</title>
+
+<!-- PWA: bisa di-install sebagai aplikasi HP -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#10161A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Triase WA">
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="dot" id="conn-dot"></div>
+      <div>
+        <h1>Triase WA</h1>
+        <p id="conn-note">Memeriksa koneksi...</p>
+      </div>
+    </div>
+    <button class="icon-btn" id="btn-settings" aria-label="Pengaturan">⚙︎</button>
+  </header>
+
+  <button class="btn install-btn" id="btn-install" style="display:none;">📲 Install sebagai Aplikasi</button>
+
+  <!-- ===== Layar pairing (tampil kalau belum tersambung) ===== -->
+  <section id="view-pairing" class="panel" style="display:none;">
+    <h2>Sambungkan WhatsApp</h2>
+    <p class="hint">Masukkan nomor WhatsApp yang mau dijadikan bot (format internasional, tanpa tanda +).</p>
+    <label for="in-phone">Nomor WhatsApp</label>
+    <input type="text" id="in-phone" placeholder="mis. 6281234567890" inputmode="numeric">
+    <button class="btn" id="btn-pair">Kirim Kode Pairing</button>
+
+    <div id="pairing-result" style="display:none;">
+      <p class="hint" style="margin-top:18px;">Buka WhatsApp di HP dengan nomor tadi:<br>
+      <b>Setelan → Perangkat Tertaut → Tautkan dengan nomor telepon</b>, lalu masukkan kode ini:</p>
+      <div class="pairing-code" id="pairing-code">----</div>
+    </div>
+    <p class="error" id="pairing-error"></p>
+  </section>
+
+  <!-- ===== Dashboard utama ===== -->
+  <section id="view-dashboard" style="display:none;">
+    <div class="filters" id="filters"></div>
+    <div class="list" id="list"></div>
+  </section>
+
+</div>
+
+<!-- ===== Panel pengaturan (drawer) ===== -->
+<div class="overlay" id="settings-overlay">
+  <div class="drawer">
+    <div class="drawer-head">
+      <h2>Pengaturan</h2>
+      <button class="icon-btn" id="btn-close-settings">✕</button>
+    </div>
+
+    <label for="s-owner">Nomor owner (penerima notifikasi)</label>
+    <input type="text" id="s-owner" placeholder="mis. 6281234567890">
+
+    <label class="switch-row">
+      <span>Deteksi urgensi otomatis</span>
+      <input type="checkbox" id="s-detect">
+    </label>
+
+    <label class="switch-row">
+      <span>Kirim notifikasi WA saat urgent</span>
+      <input type="checkbox" id="s-notify">
+    </label>
+
+    <label for="s-minlevel">Level minimum untuk notifikasi</label>
+    <select id="s-minlevel">
+      <option value="sedang">Sedang</option>
+      <option value="tinggi">Tinggi</option>
+      <option value="urgent">Urgent</option>
+    </select>
+
+    <button class="btn" id="btn-save-settings">Simpan Pengaturan</button>
+    <p class="hint" style="margin-top:14px;">Command lewat chat WhatsApp: <code>.ping</code>, <code>.urgent</code>, <code>.help</code></p>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

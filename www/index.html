@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Triase WA</title>
+<style>
+  html,body{
+    margin:0; height:100%;
+    background:#10161A; color:#E8EEF0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:24px; box-sizing:border-box;
+  }
+  .spinner{
+    width:34px;height:34px;border-radius:50%;
+    border:3px solid #2B363C; border-top-color:#3FA796;
+    animation:spin 0.9s linear infinite; margin-bottom:18px;
+  }
+  @keyframes spin{ to { transform:rotate(360deg); } }
+  h1{font-size:17px;margin:0 0 6px;font-weight:700;}
+  p{font-size:13px;color:#8DA0A8;margin:0;text-align:center;}
+  .log{
+    margin-top:22px; width:100%; max-width:420px;
+    background:#1A2227; border:1px solid #2B363C; border-radius:10px;
+    padding:10px 12px; font-family:ui-monospace,Menlo,monospace;
+    font-size:10.5px; color:#8DA0A8; max-height:180px; overflow-y:auto;
+    white-space:pre-wrap; line-height:1.5;
+  }
+  .retry{
+    display:none; margin-top:18px; background:#3FA796; color:#0A1512;
+    border:none; padding:10px 20px; border-radius:8px; font-weight:700; font-size:13px;
+  }
+</style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <h1 id="title">Menyiapkan Triase WA...</h1>
+  <p id="subtitle">Menyalakan server & menyambungkan WhatsApp di dalam aplikasi.</p>
+  <div class="log" id="log"></div>
+  <button class="retry" id="btn-retry">Muat Ulang</button>
+
+<script src="cordova.js"></script>
+<script>
+  const logEl = document.getElementById('log');
+  const titleEl = document.getElementById('title');
+  const subtitleEl = document.getElementById('subtitle');
+  const retryBtn = document.getElementById('btn-retry');
+
+  function appendLog(line){
+    const div = document.createElement('div');
+    div.textContent = line;
+    logEl.appendChild(div);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  let redirected = false;
+  function goToDashboard(){
+    if(redirected) return;
+    redirected = true;
+    titleEl.textContent = 'Siap!';
+    subtitleEl.textContent = 'Membuka dashboard...';
+    setTimeout(() => { window.location.href = 'http://localhost:3000'; }, 400);
+  }
+
+  retryBtn.addEventListener('click', () => window.location.reload());
+
+  // Kalau setelah 25 detik server belum juga siap, tawarkan tombol muat ulang
+  setTimeout(() => {
+    if(!redirected){
+      subtitleEl.textContent = 'Masih menyiapkan... kalau kelamaan, coba muat ulang.';
+      retryBtn.style.display = 'inline-block';
+    }
+  }, 25000);
+
+  document.addEventListener('deviceready', function () {
+    appendLog('📱 Aplikasi siap, menyalakan Node.js...');
+
+    if (!window.cordova || !cordova.plugins || !cordova.plugins.nodejs) {
+      titleEl.textContent = 'Plugin Node.js tidak ditemukan';
+      subtitleEl.textContent = 'nodejs-mobile-cordova belum terpasang dengan benar.';
+      return;
+    }
+
+    cordova.plugins.nodejs.start('main.js', function () {
+      appendLog('🟢 Proses Node.js dimulai');
+    });
+
+    cordova.plugins.nodejs.channel.on('message', function (msg) {
+      if (typeof msg !== 'string') return;
+      if (msg === 'server-ready') {
+        appendLog('✅ Server siap');
+        goToDashboard();
+      } else if (msg.startsWith('log:')) {
+        appendLog(msg.slice(4));
+      }
+    });
+  }, false);
+</script>
+</body>
+</html>
