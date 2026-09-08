@@ -2,23 +2,19 @@
 <widget id="com.triasewa.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Triase WA</name>
     <description>Aplikasi sortir chat WhatsApp otomatis berdasarkan urgensi.</description>
-    <author email="support@triasewa.app">Triase WA Team</author>
+    <author email="you@example.com">Kamu</author>
 
     <content src="index.html" />
 
-    <!-- Restricted access origins -->
-    <access origin="http://localhost:*" />
-    <access origin="file://*" />
+    <access origin="*" />
     <allow-navigation href="http://localhost:*" />
-    <allow-navigation href="file://*" />
+    <allow-navigation href="*" />
 
     <preference name="DisallowOverscroll" value="true" />
     <preference name="android-minSdkVersion" value="24" />
     <preference name="android-targetSdkVersion" value="34" />
     <preference name="AndroidXEnabled" value="true" />
     <preference name="BackgroundColor" value="0xff10161A" />
-    <preference name="StatusBarBackgroundColor" value="#10161A" />
-    <preference name="StatusBarStyle" value="blacktranslucent" />
 
     <platform name="android">
         <icon density="ldpi" src="nodejs-assets/nodejs-project/public/icons/icon-192.png" />
@@ -28,18 +24,13 @@
         <icon density="xxhdpi" src="nodejs-assets/nodejs-project/public/icons/icon-512.png" />
         <icon density="xxxhdpi" src="nodejs-assets/nodejs-project/public/icons/icon-512.png" />
 
-        <!-- WebView permissions: internet, storage & hardware access for WhatsApp integration -->
+        <!-- WebView perlu izin ke internet (WhatsApp) & akses localhost (server di dalam app) -->
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.INTERNET" />
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-            <uses-permission android:name="android.permission.CAMERA" />
-            <uses-permission android:name="android.permission.RECORD_AUDIO" />
-            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
         </config-file>
         <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
-            <application android:usesCleartextTraffic="false" android:networkSecurityConfig="@xml/network_security_config" />
+            <application android:usesCleartextTraffic="true" />
         </edit-config>
     </platform>
 </widget>
