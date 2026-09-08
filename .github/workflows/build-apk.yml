@@ -38,9 +38,6 @@ jobs:
         working-directory: nodejs-assets/nodejs-project
         run: npm install --omit=dev --omit=peer
 
-      - name: Clean old platforms folder (fix SDK version sync issue)
-        run: rm -rf platforms/
-
       - name: Tambah platform Android
         run: cordova platform add android@15.1.0
 
@@ -62,10 +59,14 @@ jobs:
           echo "--- Verifikasi hasil patch ---"
           grep -rn "new platformAPI(" plugins/nodejs-mobile-cordova/install/ || true
 
-      - name: Clean build directories
-        run: |
-          rm -rf platforms/android/build
-          rm -rf platforms/android/app/build
+          echo "Menambal cdvMinSdkVersion (nodejs-mobile-cordova memaksa minSdk=22, bentrok dgn CordovaLib yg butuh 24+)..."
+          GRADLE_FILE="plugins/nodejs-mobile-cordova/src/android/build.gradle"
+          if [ -f "$GRADLE_FILE" ]; then
+            sed -i "s/ext.cdvMinSdkVersion = 22/ext.cdvMinSdkVersion = 24/" "$GRADLE_FILE"
+            grep -n "cdvMinSdkVersion" "$GRADLE_FILE"
+          else
+            echo "::warning::File $GRADLE_FILE tidak ditemukan, patch minSdk dilewati."
+          fi
 
       - name: Build APK (debug, sudah bisa langsung diinstall)
         run: cordova build android --verbose
