@@ -39,7 +39,7 @@ jobs:
         run: npm install --omit=dev --omit=peer
 
       - name: Tambah platform Android
-        run: cordova platform add android
+        run: cordova platform add android@15.1.0
 
       - name: Tambah plugin nodejs-mobile-cordova
         run: cordova plugin add nodejs-mobile-cordova
