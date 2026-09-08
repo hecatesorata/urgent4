@@ -60,12 +60,22 @@ jobs:
           grep -rn "new platformAPI(" plugins/nodejs-mobile-cordova/install/ || true
 
           echo "Menambal cdvMinSdkVersion (nodejs-mobile-cordova memaksa minSdk=22, bentrok dgn CordovaLib yg butuh 24+)..."
-          GRADLE_FILE="plugins/nodejs-mobile-cordova/src/android/build.gradle"
-          if [ -f "$GRADLE_FILE" ]; then
-            sed -i "s/ext.cdvMinSdkVersion = 22/ext.cdvMinSdkVersion = 24/" "$GRADLE_FILE"
-            grep -n "cdvMinSdkVersion" "$GRADLE_FILE"
+          # File sumber di plugins/ (untuk jaga-jaga / referensi)
+          SRC_GRADLE_FILE="plugins/nodejs-mobile-cordova/src/android/build.gradle"
+          if [ -f "$SRC_GRADLE_FILE" ]; then
+            sed -i "s/ext.cdvMinSdkVersion = 22/ext.cdvMinSdkVersion = 24/" "$SRC_GRADLE_FILE"
+          fi
+          # File SALINAN di platforms/android yang benar-benar dibaca Gradle
+          # (di-copy oleh Cordova saat "plugin add", bukan saat build, jadi harus ditambal di sini juga)
+          COPIED_GRADLE_FILES=$(find platforms/android/nodejs-mobile-cordova -iname "*-build.gradle" 2>/dev/null || true)
+          if [ -z "$COPIED_GRADLE_FILES" ]; then
+            echo "::warning::Tidak ada salinan app-build.gradle nodejs-mobile-cordova ditemukan di platforms/android, patch minSdk dilewati."
           else
-            echo "::warning::File $GRADLE_FILE tidak ditemukan, patch minSdk dilewati."
+            for f in $COPIED_GRADLE_FILES; do
+              sed -i "s/ext.cdvMinSdkVersion = 22/ext.cdvMinSdkVersion = 24/" "$f"
+              echo "Dipatch: $f"
+              grep -n "cdvMinSdkVersion" "$f"
+            done
           fi
 
       - name: Build APK (debug, sudah bisa langsung diinstall)
