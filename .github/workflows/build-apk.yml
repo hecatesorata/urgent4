@@ -59,6 +59,11 @@ jobs:
           echo "--- Verifikasi hasil patch ---"
           grep -rn "new platformAPI(" plugins/nodejs-mobile-cordova/install/ || true
 
+      - name: Clean build directories
+        run: |
+          rm -rf platforms/android/build
+          rm -rf platforms/android/app/build
+
       - name: Build APK (debug, sudah bisa langsung diinstall)
         run: cordova build android --verbose
 
