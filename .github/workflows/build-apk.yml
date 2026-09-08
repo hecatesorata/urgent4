@@ -38,6 +38,9 @@ jobs:
         working-directory: nodejs-assets/nodejs-project
         run: npm install --omit=dev --omit=peer
 
+      - name: Clean old platforms folder (fix SDK version sync issue)
+        run: rm -rf platforms/
+
       - name: Tambah platform Android
         run: cordova platform add android@15.1.0
 
