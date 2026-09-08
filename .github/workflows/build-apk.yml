@@ -1,0 +1,72 @@
+name: Build APK
+
+# Build otomatis tiap kali push ke branch main, atau dijalankan manual
+# lewat tab "Actions" di GitHub (tombol "Run workflow").
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil kode dari repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java (dibutuhkan Android build)
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Node.js (dibutuhkan Cordova CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Terima semua lisensi Android SDK
+        run: yes | sdkmanager --licenses || true
+
+      - name: Install Cordova CLI
+        run: npm install -g cordova
+
+      - name: Install dependency project Node.js (yang dibundel ke dalam APK)
+        working-directory: nodejs-assets/nodejs-project
+        run: npm install --omit=dev --omit=peer
+
+      - name: Tambah platform Android
+        run: cordova platform add android
+
+      - name: Tambah plugin nodejs-mobile-cordova
+        run: cordova plugin add nodejs-mobile-cordova
+
+      - name: Build APK (debug, sudah bisa langsung diinstall)
+        run: cordova build android --verbose
+
+      - name: Cari lokasi file APK
+        id: find_apk
+        run: |
+          set -e
+          echo "Mencari file .apk di platforms/android ..."
+          APK_PATH=$(find platforms/android -type f -name "*.apk" | sort | head -n 1)
+
+          if [ -z "$APK_PATH" ]; then
+            echo "::error::Tidak ada file .apk yang ditemukan. Build kemungkinan gagal diam-diam atau menghasilkan format lain (mis. .aab)."
+            echo "Isi folder build hasil Gradle (untuk debugging):"
+            find platforms/android -type f \( -name "*.apk" -o -name "*.aab" \) 2>/dev/null
+            find platforms/android -maxdepth 6 -type d
+            exit 1
+          fi
+
+          echo "APK ditemukan di: $APK_PATH"
+          echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK sebagai artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: triase-wa-apk
+          path: ${{ steps.find_apk.outputs.apk_path }}
